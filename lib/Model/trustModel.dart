@@ -1,24 +1,16 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class TrusteeModel {
-  List<TrusteePerson> tPerson = List<TrusteePerson>();
+  String gmail;
+  List<dynamic> trustees =[];
 
-  TrusteePerson a = TrusteePerson("g@email.com");
-  TrusteePerson b = TrusteePerson("r@gmail.com");
+  TrusteeModel({this.gmail,this.trustees});
 
-  StreamController<List<TrusteePerson>> sc = StreamController();
-
-  TrusteeModel() {
-    tPerson.add(a);
-    tPerson.add(b);
-    tPerson.add(b);
-    tPerson.add(b);
-
-    sc.sink.add(tPerson);
+  factory TrusteeModel.fromDoc(DocumentSnapshot snapshot){
+    return TrusteeModel(gmail:snapshot['email'],
+                        trustees:snapshot['trustees']);
   }
 }
 
-class TrusteePerson {
-  final String emailAddress;
-  TrusteePerson(this.emailAddress);
-}

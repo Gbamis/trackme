@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:trackme/Constants.dart';
 import 'package:trackme/Model/trustModel.dart';
 import 'package:flutter/material.dart';
 import 'package:trackme/States/Management.dart';
+import 'package:trackme/Service/fireBase.dart';
+import 'package:trackme/Model/trustModel.dart';
 
 class TrackPage extends StatefulWidget {
   TrackPage({Key key}) : super(key: key);
@@ -44,6 +47,7 @@ class _TrackState extends State<TrackPage> {
   @override
   void initState() {
     super.initState();
+
     tabs.add(m);
     tabs.add(tt);
   }
@@ -70,12 +74,12 @@ class _MeState extends State<Me> {
   StateManagement sm;
 
   bool t;
-  
+
   void tapped() {
     setState(() {
-      t =!t;
+      t = !t;
 
-     sm.setTrack(t);
+      sm.setTrack(t);
     });
   }
 
@@ -93,7 +97,7 @@ class _MeState extends State<Me> {
             tapped();
           },
           child: Card(
-            color: sm.isTracked? Colors.green[400] : Colors.grey,
+            color: sm.isTracked ? Colors.green[400] : Colors.grey,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100)),
             child: Center(child: Text("Track")),
@@ -111,6 +115,13 @@ class Trustee extends StatefulWidget {
 
 class _TrusteeState extends State<Trustee> {
   TrusteeModel tModel = TrusteeModel();
+  FireBaseAPI api;
+
+  @override
+  void initState() {
+    super.initState();
+    api = FireBaseAPI();
+  }
 
   @override
   Widget build(BuildContext con) {
@@ -119,34 +130,43 @@ class _TrusteeState extends State<Trustee> {
 
   Widget _buildList() {
     return Container(
-        child: StreamBuilder(
-            stream: tModel.sc.stream,
-            builder: (con, AsyncSnapshot<List<TrusteePerson>> snapshot) {
-              if (snapshot.data == null) {
-                  return Text("No Trustees added yet");
-               }
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (con, index) {
-                    TrusteePerson tP = snapshot.data[index];
-                     //return Text("No Trustees added yet");
-                    return _listItem(context, tP);
-                  });
+        child: StreamBuilder<QuerySnapshot>(
+            stream: api.collRef.snapshots(),
+            builder: (con, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return _buildFromListSnapshots(con, snapshot.data.documents);
             }));
   }
 
-  Widget _listItem(BuildContext con, TrusteePerson tp) {
-    String email = tp.emailAddress;
-    final _gUrl = '''https://cdn.worldvectorlogo.com/logos/google-icon.svg''';
-    return GestureDetector(
-        onTap: () {
-          Navigator.pushNamed(con, "/map");
-        },
-        child: Card(
+  Widget _buildFromListSnapshots(BuildContext context, List<DocumentSnapshot> docs) {
+    docs.forEach((item) {
+      TrusteeModel trustee = TrusteeModel.fromDoc(item);
+      return _buildItem(trustee.gmail);
+    });
+  }
+
+  static Widget _buildItem(String name) {
+    return Dismissible(
+      key: ValueKey(name),
+      background: Container(color: control),
+      direction: DismissDirection.horizontal,
+      child: SizedBox(
+        height: 70,
+        child: Column(children: <Widget>[
+          Card(
+            elevation: 6,
             color: listItemColor,
             child: ListTile(
-              leading: Image.network(_gUrl),
-              title: Text('${email}'),
-            )));
+              leading: CircleAvatar(),
+              title: Text(name,
+                  style: TextStyle(color: Colors.white, fontSize: 19)),
+            ),
+          ),
+          Divider(),
+        ]),
+      ),
+    );
   }
 }
