@@ -1,4 +1,4 @@
-package com.example.trackme
+package com.example.leecit
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

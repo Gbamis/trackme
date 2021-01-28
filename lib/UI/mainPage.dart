@@ -1,60 +1,52 @@
-import 'package:trackme/Constants.dart';
-import 'package:flutter/material.dart';
+import "package:leecit/constants.dart";
+import "package:flutter/material.dart";
+import "package:leecit/UI/widgets.dart";
 
 class MainPage extends StatelessWidget {
-  Widget _page(BuildContext con) {
-    final _gUrl = '''https://cdn.worldvectorlogo.com/logos/google-icon.svg''';
+  Widget _backgroundImage(double w, double h) {
+    return Container(
+      height: h,
+      width: w,
+      child: ClipPath(
+        clipper: MyClipper(),
+        child: Image.network(bgUrl, fit: BoxFit.cover),
+      ),
+    );
+  }
 
+  Widget _page(BuildContext con) {
+    
     var size = MediaQuery.of(con).size;
     h = size.height;
     w = size.width;
-    double _hh = h - (h / 3) - 100;
-    return Center(
-      child: Column(children: <Widget>[
-        SizedBox(height: _hh),
-        Text("TrackMe",
-            style: TextStyle(
-                fontSize: 80, color: bottons, fontWeight: FontWeight.bold)),
-        Container(
-          width: w - (w / 2),
-          height: 100,
-          child: Card(
-              color: bottons,
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(40),
-                      bottomRight: Radius.circular(40))),
-              child: Center(
-                child: Row(children: <Widget>[
-                  SizedBox(width: 20),
-                  Container(
-                    width: 30,
-                    height: 30,
-                    child: Image.network(_gUrl, fit: BoxFit.cover),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                      flex: 1,
-                      child: Text("Sign in with google",
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold))),
-                  Expanded(
-                    flex: 1,
-                    child: RotatedBox(
-                      quarterTurns: 1,
-                      child: FloatingActionButton(
-                          backgroundColor: primary,
-                          child: Icon(Icons.navigation),
-                          onPressed: () {
-                            Navigator.pushNamed(con, "/track");
-                          }),
-                    ),
-                  ),
-                ]),
-              )),
+
+    return Container(
+      child: Stack(children: <Widget>[
+        Positioned(
+          child: _backgroundImage(w, h),
+        ),
+        Positioned(
+          bottom: 10,
+          left: w/5,
+          child: Row(children: <Widget>[
+            Button(
+                title: "Rent yours",
+                height: 50,
+                width: 150,
+                bgColor: bottons,
+                onTap: () {
+                  Navigator.of(con).pushNamed("/add");
+                }),
+            SizedBox(width: 10),
+            Button(
+                title: "Find",
+                height: 50,
+                width: 150,
+                bgColor: bottons,
+                onTap: () {
+                  Navigator.of(con).pushNamed("/findHouse");
+                }),
+          ]),
         ),
       ]),
     );
@@ -67,4 +59,21 @@ class MainPage extends StatelessWidget {
       body: _page(con),
     );
   }
+}
+
+class MyClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = new Path();
+
+    path.lineTo(0, size.height - (size.height / 3));
+    path.quadraticBezierTo(size.width / 2, size.height - 10, size.width,
+        size.height - (size.height / 3));
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }

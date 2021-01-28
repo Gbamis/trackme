@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'UI/mainPage.dart';
-import 'UI/mapView.dart';
-import 'UI/trackPage.dart';
+import 'package:leecit/UI/mainPage.dart';
+import "package:leecit/UI/splashScreen.dart";
+import 'package:leecit/UI/addPage.dart';
+import 'package:leecit/UI/findPage.dart';
+import 'package:leecit/UI/detailsPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -12,11 +14,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
         routes: {
-          "/": (context) => MainPage(),
-          "/track": (context) => TrackPage(),
-          "/map": (context) => MapView(),
+          "/": (context) => Splash(),
+          "/home": (context) => MainPage(),
+          "/add" : (context) => AddProperty(),
+          "/findHouse": (context) => FindHouse(),
+          "/details" :(context)=>DetailsPage(),
         },
-        initialRoute: "/");
+        initialRoute: "/"
+    );
   }
 }
 
